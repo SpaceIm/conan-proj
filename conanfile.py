@@ -1,3 +1,4 @@
+import glob
 import os
 
 from conans import ConanFile, CMake, tools
@@ -38,7 +39,7 @@ class ProjConan(ConanFile):
             del self.options.fPIC
 
     def requirements(self):
-        self.requires("sqlite3/3.31.1")
+        self.requires.add("sqlite3/3.31.1")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -57,8 +58,15 @@ class ProjConan(ConanFile):
         self._cmake.definitions["PROJ_TESTS"] = False
         self._cmake.definitions["BUILD_LIBPROJ_SHARED"] = self.options.shared
         self._cmake.definitions["USE_THREAD"] = self.options.threadsafe
-        self._cmake.definitions["ENABLE_LTO"] = False # let consumer set proper linker flag himself
+        self._cmake.definitions["ENABLE_LTO"] = False
         self._cmake.definitions["JNI_SUPPORT"] = False
+        self._cmake.definitions["BUILD_CCT"] = True
+        self._cmake.definitions["BUILD_CS2CS"] = True
+        self._cmake.definitions["BUILD_GEOD"] = True
+        self._cmake.definitions["BUILD_GIE"] = True
+        self._cmake.definitions["BUILD_PROJ"] = True
+        self._cmake.definitions["BUILD_PROJINFO"] = True
+        self._cmake.definitions["PROJ_DATA_SUBDIR"] = "res"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
 
@@ -66,13 +74,16 @@ class ProjConan(ConanFile):
         self.copy("COPYING", dst="licenses", src=self._source_subfolder)
         cmake = self._configure_cmake()
         cmake.install()
-        self.copy("*.db",
-                  src=os.path.join(self.package_folder, "share", "proj"),
-                  dst=os.path.join(self.package_folder, "res"))
         tools.rmdir(os.path.join(self.package_folder, "share"))
         tools.rmdir(os.path.join(self.package_folder, "lib", "cmake"))
+        for data_file in glob.glob(os.path.join(self.package_folder, "res", "*")):
+            if not data_file.endswith("proj.db"):
+                os.remove(data_file)
 
     def package_info(self):
+        # exported target is PROJ4::proj (deprecated) or PROJ::proj (see https://github.com/OSGeo/PROJ/issues/1885)
+        self.cpp_info.names["cmake_find_package"] = "PROJ4"
+        self.cpp_info.names["cmake_find_package_multi"] = "PROJ4"
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
