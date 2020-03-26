@@ -16,12 +16,16 @@ class ProjConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "threadsafe": [True, False]
+        "threadsafe": [True, False],
+        "with_tiff": [True, False],
+        "with_curl": [True, False]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        "threadsafe": True
+        "threadsafe": True,
+        "with_tiff": True,
+        "with_curl": True
     }
 
     _cmake = None
@@ -40,6 +44,10 @@ class ProjConan(ConanFile):
 
     def requirements(self):
         self.requires.add("sqlite3/3.31.1")
+        if self.options.with_tiff:
+            self.requires.add("libtiff/4.1.0")
+        if self.options.with_curl:
+            self.requires.add("libcurl/7.69.1")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -55,17 +63,18 @@ class ProjConan(ConanFile):
         if self._cmake:
             return self._cmake
         self._cmake = CMake(self)
-        self._cmake.definitions["PROJ_TESTS"] = False
-        self._cmake.definitions["BUILD_LIBPROJ_SHARED"] = self.options.shared
+        self._cmake.definitions["ENABLE_TIFF"] = self.options.with_tiff
+        self._cmake.definitions["ENABLE_CURL"] = self.options.with_curl
+        self._cmake.definitions["BUILD_TESTING"] = False
         self._cmake.definitions["USE_THREAD"] = self.options.threadsafe
-        self._cmake.definitions["ENABLE_LTO"] = False
-        self._cmake.definitions["JNI_SUPPORT"] = False
+        self._cmake.definitions["ENABLE_IPO"] = False
         self._cmake.definitions["BUILD_CCT"] = True
         self._cmake.definitions["BUILD_CS2CS"] = True
         self._cmake.definitions["BUILD_GEOD"] = True
         self._cmake.definitions["BUILD_GIE"] = True
         self._cmake.definitions["BUILD_PROJ"] = True
         self._cmake.definitions["BUILD_PROJINFO"] = True
+        self._cmake.definitions["BUILD_PROJSYNC"] = True
         self._cmake.definitions["PROJ_DATA_SUBDIR"] = "res"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
@@ -81,8 +90,8 @@ class ProjConan(ConanFile):
                 os.remove(data_file)
 
     def package_info(self):
-        self.cpp_info.names["cmake_find_package"] = "PROJ4"
-        self.cpp_info.names["cmake_find_package_multi"] = "PROJ4"
+        self.cpp_info.names["cmake_find_package"] = "PROJ"
+        self.cpp_info.names["cmake_find_package_multi"] = "PROJ"
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
