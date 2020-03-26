@@ -16,12 +16,12 @@ class ProjConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "threadsafe": [True, False],
+        "threadsafe": [True, False]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        "threadsafe": True,
+        "threadsafe": True
     }
 
     _cmake = None
@@ -82,8 +82,8 @@ class ProjConan(ConanFile):
 
     def package_info(self):
         # exported target is PROJ4::proj (deprecated) or PROJ::proj (see https://github.com/OSGeo/PROJ/issues/1885)
-        self.cpp_info.names["cmake_find_package"] = "PROJ4"
-        self.cpp_info.names["cmake_find_package_multi"] = "PROJ4"
+        self.cpp_info.names["cmake_find_package"] = "PROJ"
+        self.cpp_info.names["cmake_find_package_multi"] = "PROJ"
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
