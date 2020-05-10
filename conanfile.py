@@ -90,6 +90,7 @@ class ProjConan(ConanFile):
                 os.remove(data_file)
 
     def package_info(self):
+        # TODO: CMake exported target is PROJ::proj (or PROJ4::proj which is deprecated)
         self.cpp_info.names["cmake_find_package"] = "PROJ"
         self.cpp_info.names["cmake_find_package_multi"] = "PROJ"
         self.cpp_info.libs = tools.collect_libs(self)
