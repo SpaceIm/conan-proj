@@ -54,7 +54,7 @@ class ProjConan(ConanFile):
         os.rename(self.name + "-" + self.version, self._source_subfolder)
 
     def build(self):
-        for patch in self.conan_data["patches"][self.version]:
+        for patch in self.conan_data.get("patches", {}).get(self.version, []):
             tools.patch(**patch)
         cmake = self._configure_cmake()
         cmake.build()
@@ -74,7 +74,7 @@ class ProjConan(ConanFile):
         self._cmake.definitions["BUILD_GIE"] = True
         self._cmake.definitions["BUILD_PROJ"] = True
         self._cmake.definitions["BUILD_PROJINFO"] = True
-        self._cmake.definitions["BUILD_PROJSYNC"] = True
+        self._cmake.definitions["BUILD_PROJSYNC"] = self.options.with_curl
         self._cmake.definitions["PROJ_DATA_SUBDIR"] = "res"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
