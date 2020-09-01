@@ -1,7 +1,8 @@
-import glob
 import os
 
 from conans import ConanFile, CMake, tools
+
+required_conan_version = ">=1.28.2"
 
 class ProjConan(ConanFile):
     name = "proj"
@@ -51,7 +52,7 @@ class ProjConan(ConanFile):
         if self.options.with_tiff:
             self.requires("libtiff/4.1.0")
         if self.options.with_curl:
-            self.requires("libcurl/7.71.0")
+            self.requires("libcurl/7.71.1")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
