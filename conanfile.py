@@ -1,6 +1,6 @@
 import os
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake, tools, RunEnvironment
 
 required_conan_version = ">=1.28.2"
 
@@ -54,6 +54,9 @@ class ProjConan(ConanFile):
         if self.options.with_curl:
             self.requires("libcurl/7.71.1")
 
+    def build_requirements(self):
+        self.build_requires("sqlite3/3.32.3")
+
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
         os.rename(self.name + "-" + self.version, self._source_subfolder)
@@ -61,8 +64,9 @@ class ProjConan(ConanFile):
     def build(self):
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
             tools.patch(**patch)
-        cmake = self._configure_cmake()
-        cmake.build()
+        with tools.environment_append(RunEnvironment(self).vars):
+            cmake = self._configure_cmake()
+            cmake.build()
 
     def _configure_cmake(self):
         if self._cmake:
