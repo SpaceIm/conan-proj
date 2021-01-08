@@ -1,6 +1,6 @@
 import os
 
-from conans import ConanFile, CMake, tools, RunEnvironment
+from conans import ConanFile, CMake, tools
 
 required_conan_version = ">=1.28.2"
 
@@ -61,7 +61,7 @@ class ProjConan(ConanFile):
 
     def build(self):
         self._patch_sources()
-        with tools.environment_append(RunEnvironment(self).vars):
+        with tools.run_environment(self):
             cmake = self._configure_cmake()
             cmake.build()
 
