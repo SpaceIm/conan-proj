@@ -19,14 +19,16 @@ class ProjConan(ConanFile):
         "fPIC": [True, False],
         "threadsafe": [True, False],
         "with_tiff": [True, False],
-        "with_curl": [True, False]
+        "with_curl": [True, False],
+        "build_executables": [True, False]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "threadsafe": True,
         "with_tiff": True,
-        "with_curl": True
+        "with_curl": True,
+        "build_executables": True
     }
 
     _cmake = None
@@ -77,13 +79,13 @@ class ProjConan(ConanFile):
         self._cmake.definitions["BUILD_TESTING"] = False
         self._cmake.definitions["USE_THREAD"] = self.options.threadsafe
         self._cmake.definitions["ENABLE_IPO"] = False
-        self._cmake.definitions["BUILD_CCT"] = True
-        self._cmake.definitions["BUILD_CS2CS"] = True
-        self._cmake.definitions["BUILD_GEOD"] = True
-        self._cmake.definitions["BUILD_GIE"] = True
-        self._cmake.definitions["BUILD_PROJ"] = True
-        self._cmake.definitions["BUILD_PROJINFO"] = True
-        self._cmake.definitions["BUILD_PROJSYNC"] = self.options.with_curl
+        self._cmake.definitions["BUILD_CCT"] = self.options.build_executables
+        self._cmake.definitions["BUILD_CS2CS"] = self.options.build_executables
+        self._cmake.definitions["BUILD_GEOD"] = self.options.build_executables
+        self._cmake.definitions["BUILD_GIE"] = self.options.build_executables
+        self._cmake.definitions["BUILD_PROJ"] = self.options.build_executables
+        self._cmake.definitions["BUILD_PROJINFO"] = self.options.build_executables
+        self._cmake.definitions["BUILD_PROJSYNC"] = self.options.build_executables and self.options.with_curl
         self._cmake.definitions["PROJ_DATA_SUBDIR"] = "res"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
@@ -123,6 +125,7 @@ class ProjConan(ConanFile):
         res_path = os.path.join(self.package_folder, "res")
         self.output.info("Appending PROJ_LIB environment variable: {}".format(res_path))
         self.env_info.PROJ_LIB.append(res_path)
-        bin_path = os.path.join(self.package_folder, "bin")
-        self.output.info("Appending PATH environment variable: {}".format(bin_path))
-        self.env_info.PATH.append(bin_path)
+        if self.options.build_executables:
+            bin_path = os.path.join(self.package_folder, "bin")
+            self.output.info("Appending PATH environment variable: {}".format(bin_path))
+            self.env_info.PATH.append(bin_path)
