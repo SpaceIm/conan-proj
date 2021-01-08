@@ -46,14 +46,14 @@ class ProjConan(ConanFile):
             del self.options.fPIC
 
     def requirements(self):
-        self.requires("sqlite3/3.32.3")
+        self.requires("sqlite3/3.34.0")
         if self.options.with_tiff:
             self.requires("libtiff/4.1.0")
         if self.options.with_curl:
-            self.requires("libcurl/7.71.1")
+            self.requires("libcurl/7.74.0")
 
     def build_requirements(self):
-        self.build_requires("sqlite3/3.32.3")
+        self.build_requires("sqlite3/3.34.0")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
