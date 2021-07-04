@@ -76,7 +76,7 @@ class ProjConan(ConanFile):
         cmakelists = os.path.join(self._source_subfolder, "CMakeLists.txt")
         tools.replace_in_file(cmakelists, "/W4", "")
         # Trick to find sqlite3 executable for build machine
-        sqlite3_exe_build_context_paths = " ".join("\"{}\"".format(path) for path in self.deps_env_info["sqlite3"].PATH)
+        sqlite3_exe_build_context_paths = " ".join(self.deps_env_info["sqlite3"].PATH)
         tools.replace_in_file(cmakelists,
                               "find_program(EXE_SQLITE3 sqlite3)",
                               "find_program(EXE_SQLITE3 sqlite3 PATHS {} NO_DEFAULT_PATH)".format(sqlite3_exe_build_context_paths))
