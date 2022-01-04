@@ -1,4 +1,7 @@
 sources:
+  "8.2.1":
+    url: "https://github.com/OSGeo/PROJ/releases/download/8.2.1/proj-8.2.1.tar.gz"
+    sha256: "76ed3d0c3a348a6693dfae535e5658bbfd47f71cb7ff7eb96d9f12f7e068b1cf"
   "8.2.0":
     url: "https://github.com/OSGeo/PROJ/releases/download/8.2.0/proj-8.2.0.tar.gz"
     sha256: "de93df9a4aa88d09459ead791f2dbc874b897bf67a5bbb3e4b68de7b1bdef13c"
@@ -33,6 +36,9 @@ sources:
     url: "https://github.com/OSGeo/PROJ/releases/download/7.0.0/proj-7.0.0.tar.gz"
     sha256: "ee0e14c1bd2f9429b1a28999240304c0342ed739ebaea3d4ff44c585b1097be8"
 patches:
+  "8.2.1":
+    - patch_file: "patches/use-cmake-targets-8.2.0.patch"
+      base_path: "source_subfolder"
   "8.2.0":
     - patch_file: "patches/use-cmake-targets-8.2.0.patch"
       base_path: "source_subfolder"
